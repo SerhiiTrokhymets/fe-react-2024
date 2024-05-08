@@ -1,0 +1,39 @@
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 166px;
+  align-items: center;
+  margin-bottom: 30px;
+  border-top: 1px solid #CCC;
+}
+
+.description {
+  font-family: var(--main-font-family);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  text-align: center;
+  margin-right: 30px;
+  margin-left: 30px;
+}
+
+.link {
+  color: var(--red);
+}
+
+@media (min-width: 1280px) {
+
+  .container {
+    height: 160px;
+    margin-bottom: 42px;
+  }
+
+  .description {
+    font-size: 22px;
+    line-height: 32px;
+    margin: 0;
+  }
+}
