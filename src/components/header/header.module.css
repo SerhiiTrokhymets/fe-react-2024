@@ -47,9 +47,10 @@
 }
 
 .button {
-  background-color: var(--deep-black);
-  color: var(--white);
-  padding: 0;
+  display: none;
+  /*background-color: var(--deep-black);*/
+  /*color: var(--white);*/
+  /*padding: 0;*/
 }
 
 .boldNavItem {
@@ -91,6 +92,9 @@
 
   .switcher {
     margin: 10px 5px;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
   }
 
   .separator {
@@ -112,7 +116,10 @@
   }
 
   .button {
+    display: block;
     background-color: var(--deep-black);
+    color: var(--white);
+    padding: 0;
   }
 
   .cartIcon {
