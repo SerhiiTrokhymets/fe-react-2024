@@ -30,21 +30,29 @@ export const ProductsList: React.FC<CarsCounterSetProps> = ({ totalCartCounter, 
         return category === null ? null : (category as CategoryType);
     };
     const [currentCategory, setCategory] = useState<CategoryType | null>(getCategoryFromLocalStorage);
+    const [productTitle, setProductTitle] = useState<string>('');
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
 
-    function filterProductsByCategory(products: Product[], categoryName: CategoryType | null): Product[] {
-        return categoryName === null ? products : products.filter((product) => product.category.name === categoryName);
+    function searchByProductTitle(products: Product[]) {
+        return products.filter((product) => product.title.toLowerCase().startsWith(productTitle.toLowerCase()));
     }
 
-    const filteredProducts = filterProductsByCategory(response, currentCategory);
+    function filterProductsByCategory(products: Product[]) {
+        return currentCategory === null ? products : products.filter((product) => product.category.name === currentCategory);
+    }
 
-    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    function filterProducts() {
+        const productsResult = filterProductsByCategory(response);
+        return searchByProductTitle(productsResult);
+    }
+
+    const currentProducts = filterProducts().slice(indexOfFirstProduct, indexOfLastProduct);
     const paginate = (pageNumber: SetStateAction<number>) => setCurrentPage(pageNumber);
 
     return (
         <ul className={styles.container}>
-            <SearchBar currentCategory={currentCategory} setActiveCategory={setCategory} />
+            <SearchBar currentCategory={currentCategory} setActiveCategory={setCategory} setProductTitle={setProductTitle} />
             <li className={styles.products}>
                 {currentProducts.map((item) => (
                     <ProductCard
@@ -55,7 +63,7 @@ export const ProductsList: React.FC<CarsCounterSetProps> = ({ totalCartCounter, 
                     />
                 ))}
             </li>
-            <Pagination productsPerPage={productsPerPage} totalProducts={filteredProducts.length} paginate={paginate} />
+            <Pagination productsPerPage={productsPerPage} totalProducts={filterProducts().length} paginate={paginate} />
         </ul>
     );
 };

@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+
 import { CategoryType } from '@/components/ProductsList/ProductsList.component.tsx';
 
 import seachSVG from '../../assets/search.svg';
@@ -7,9 +9,11 @@ import styles from './SearchBar.module.css';
 interface BarAttributes {
     currentCategory: string | null;
     setActiveCategory: (category: CategoryType | null) => void;
+    setProductTitle: (title: string) => void;
 }
 
-export const SearchBar: React.FC<BarAttributes> = ({ currentCategory, setActiveCategory }) => {
+export const SearchBar: React.FC<BarAttributes> = ({ currentCategory, setActiveCategory, setProductTitle }) => {
+    const [searchInput, setSearchInput] = useState<string>('');
     const buttonCategoryClasses = (category: string) => {
         const categoryClasses = `${styles.buttonCategory} ${styles.buttonCaption}`;
         return currentCategory === category ? `${categoryClasses} ${styles.activeButton}` : categoryClasses;
@@ -27,11 +31,25 @@ export const SearchBar: React.FC<BarAttributes> = ({ currentCategory, setActiveC
         }
     };
 
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(event.target.value);
+    };
+
+    const handleSearchClick = () => {
+        setProductTitle(searchInput);
+    };
+
     return (
         <div className={styles.container}>
             <div className={styles.searchSection}>
-                <input className={styles.inputSearch} type="text" placeholder="Search..." />
-                <button className={`${styles.searchButton} ${styles.buttonCaption}`}>
+                <input
+                    className={styles.inputSearch}
+                    type="text"
+                    placeholder="Search..."
+                    value={searchInput}
+                    onChange={handleInputChange}
+                />
+                <button className={`${styles.searchButton} ${styles.buttonCaption}`} onClick={handleSearchClick}>
                     <img className={styles.cart} src={seachSVG} alt="Cart" style={{ fill: 'red' }} />
                 </button>
             </div>
