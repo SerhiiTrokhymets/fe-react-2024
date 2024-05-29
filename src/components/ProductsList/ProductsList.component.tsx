@@ -2,6 +2,7 @@ import type { SetStateAction } from 'react';
 import React from 'react';
 import { useState } from 'react';
 
+import type Product from '../api/apiInterfaces.ts';
 import { Pagination } from '../Pagination/Pagination.component.tsx';
 import { ProductCard } from '../ProductCard/ProductCard.tsx';
 import { SearchBar } from '../SearchBar/SearchBar.component';
@@ -15,18 +16,43 @@ interface CarsCounterSetProps {
     setTotalCartCounter: (counter: number) => void;
 }
 
+export enum CategoryType {
+    ELECTRONICS = 'Electronics',
+    SHOES = 'Shoes',
+    CLOTHES = 'Clothes',
+}
+
 export const ProductsList: React.FC<CarsCounterSetProps> = ({ totalCartCounter, setTotalCartCounter }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const productsPerPage = 8;
-
+    const getCategoryFromLocalStorage = () => {
+        const category = localStorage.getItem('category');
+        return category === null ? null : (category as CategoryType);
+    };
+    const [currentCategory, setCategory] = useState<CategoryType | null>(getCategoryFromLocalStorage);
+    const [productTitle, setProductTitle] = useState<string>('');
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-    const currentProducts = response.slice(indexOfFirstProduct, indexOfLastProduct);
+
+    function searchByProductTitle(products: Product[]) {
+        return products.filter((product) => product.title.toLowerCase().startsWith(productTitle.toLowerCase()));
+    }
+
+    function filterProductsByCategory(products: Product[]) {
+        return currentCategory === null ? products : products.filter((product) => product.category.name === currentCategory);
+    }
+
+    function filterProducts() {
+        const productsResult = filterProductsByCategory(response);
+        return searchByProductTitle(productsResult);
+    }
+
+    const currentProducts = filterProducts().slice(indexOfFirstProduct, indexOfLastProduct);
     const paginate = (pageNumber: SetStateAction<number>) => setCurrentPage(pageNumber);
 
     return (
         <ul className={styles.container}>
-            <SearchBar />
+            <SearchBar currentCategory={currentCategory} setActiveCategory={setCategory} setProductTitle={setProductTitle} />
             <li className={styles.products}>
                 {currentProducts.map((item) => (
                     <ProductCard
@@ -37,7 +63,7 @@ export const ProductsList: React.FC<CarsCounterSetProps> = ({ totalCartCounter, 
                     />
                 ))}
             </li>
-            <Pagination productsPerPage={productsPerPage} totalProducts={response.length} paginate={paginate} />
+            <Pagination productsPerPage={productsPerPage} totalProducts={filterProducts().length} paginate={paginate} />
         </ul>
     );
 };

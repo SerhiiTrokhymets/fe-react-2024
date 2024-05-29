@@ -1,40 +1,69 @@
 import React, { useState } from 'react';
 
+import { CategoryType } from '@/components/ProductsList/ProductsList.component.tsx';
+
 import seachSVG from '../../assets/search.svg';
 
 import styles from './SearchBar.module.css';
 
-export const SearchBar: React.FC = () => {
-    const [activeCategory, setActiveCategory] = useState('');
+interface BarAttributes {
+    currentCategory: string | null;
+    setActiveCategory: (category: CategoryType | null) => void;
+    setProductTitle: (title: string) => void;
+}
+
+export const SearchBar: React.FC<BarAttributes> = ({ currentCategory, setActiveCategory, setProductTitle }) => {
+    const [searchInput, setSearchInput] = useState<string>('');
     const buttonCategoryClasses = (category: string) => {
         const categoryClasses = `${styles.buttonCategory} ${styles.buttonCaption}`;
-        return activeCategory === category ? `${categoryClasses} ${styles.activeButton}` : categoryClasses;
+        return currentCategory === category ? `${categoryClasses} ${styles.activeButton}` : categoryClasses;
     };
 
     const dropDownContentButtonClasses = `${styles.dropDownContentButton} ${styles.buttonCaption}`;
 
-    const handleButtonCategory = (category: string) => {
-        setActiveCategory(category);
+    const handleButtonCategory = (category: CategoryType) => {
+        if (currentCategory === category) {
+            setActiveCategory(null);
+            localStorage.removeItem('category');
+        } else {
+            setActiveCategory(category);
+            localStorage.setItem('category', category);
+        }
+    };
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(event.target.value);
+    };
+
+    const handleSearchClick = () => {
+        setProductTitle(searchInput);
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.searchSection}>
-                <input className={styles.inputSearch} type="text" placeholder="Search..." />
-                <button className={`${styles.searchButton} ${styles.buttonCaption}`}>
+                <input
+                    className={styles.inputSearch}
+                    type="text"
+                    placeholder="Search..."
+                    value={searchInput}
+                    onChange={handleInputChange}
+                />
+                <button className={`${styles.searchButton} ${styles.buttonCaption}`} onClick={handleSearchClick}>
                     <img className={styles.cart} src={seachSVG} alt="Cart" style={{ fill: 'red' }} />
                 </button>
             </div>
             <div className={styles.buttonSection}>
-                <button onClick={() => handleButtonCategory('electronics')} className={buttonCategoryClasses('electronics')}>
+                <button
+                    onClick={() => handleButtonCategory(CategoryType.ELECTRONICS)}
+                    className={buttonCategoryClasses(CategoryType.ELECTRONICS)}
+                >
                     Electronics
                 </button>
-                <button onClick={() => handleButtonCategory('shoes')} className={buttonCategoryClasses('shoes')}>
-                    {' '}
+                <button onClick={() => handleButtonCategory(CategoryType.SHOES)} className={buttonCategoryClasses(CategoryType.SHOES)}>
                     Shoes
                 </button>
-                <button onClick={() => handleButtonCategory('clothes')} className={buttonCategoryClasses('clothes')}>
-                    {' '}
+                <button onClick={() => handleButtonCategory(CategoryType.CLOTHES)} className={buttonCategoryClasses(CategoryType.CLOTHES)}>
                     Clothes
                 </button>
             </div>

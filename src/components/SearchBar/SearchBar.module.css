@@ -34,6 +34,10 @@
   outline: none;
 }
 
+.inputSearch:not(:focus) {
+  color: var(--textColor);
+}
+
 .buttonCategory {
   border-color: var(--grey);
   border-radius: 50px;
